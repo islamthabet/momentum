@@ -50,7 +50,6 @@ function Login() {
           errors={errors}
           icon={<TfiKey />}
         />
-
         <button className="btn btn-outline  w-full">Login</button>
       </form>
       <div className="my-8 space-y-8">

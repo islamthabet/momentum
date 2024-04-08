@@ -14,6 +14,7 @@ import { Route as rootRoute } from './routes/__root'
 import { Route as HomeImport } from './routes/_home'
 import { Route as AuthImport } from './routes/_auth'
 import { Route as IndexImport } from './routes/index'
+import { Route as HomeGoalImport } from './routes/_home/goal'
 import { Route as AuthSignupRouteImport } from './routes/_auth/signup/route'
 import { Route as AuthLoginRouteImport } from './routes/_auth/login/route'
 import { Route as HomeTaskIndexImport } from './routes/_home/task/index'
@@ -23,7 +24,9 @@ import { Route as HomeHabitIndexImport } from './routes/_home/habit/index'
 import { Route as HomeGoalIndexImport } from './routes/_home/goal/index'
 import { Route as HomeFocusIndexImport } from './routes/_home/focus/index'
 import { Route as HomeDiaryIndexImport } from './routes/_home/diary/index'
+import { Route as HomeCalenderIndexImport } from './routes/_home/calender/index'
 import { Route as HomeAnalyticsIndexImport } from './routes/_home/analytics/index'
+import { Route as HomeGoalIdImport } from './routes/_home/goal/$id'
 
 // Create/Update Routes
 
@@ -40,6 +43,11 @@ const AuthRoute = AuthImport.update({
 const IndexRoute = IndexImport.update({
   path: '/',
   getParentRoute: () => rootRoute,
+} as any)
+
+const HomeGoalRoute = HomeGoalImport.update({
+  path: '/goal',
+  getParentRoute: () => HomeRoute,
 } as any)
 
 const AuthSignupRouteRoute = AuthSignupRouteImport.update({
@@ -73,8 +81,8 @@ const HomeHabitIndexRoute = HomeHabitIndexImport.update({
 } as any)
 
 const HomeGoalIndexRoute = HomeGoalIndexImport.update({
-  path: '/goal/',
-  getParentRoute: () => HomeRoute,
+  path: '/',
+  getParentRoute: () => HomeGoalRoute,
 } as any)
 
 const HomeFocusIndexRoute = HomeFocusIndexImport.update({
@@ -87,9 +95,19 @@ const HomeDiaryIndexRoute = HomeDiaryIndexImport.update({
   getParentRoute: () => HomeRoute,
 } as any)
 
+const HomeCalenderIndexRoute = HomeCalenderIndexImport.update({
+  path: '/calender/',
+  getParentRoute: () => HomeRoute,
+} as any)
+
 const HomeAnalyticsIndexRoute = HomeAnalyticsIndexImport.update({
   path: '/analytics/',
   getParentRoute: () => HomeRoute,
+} as any)
+
+const HomeGoalIdRoute = HomeGoalIdImport.update({
+  path: '/$id',
+  getParentRoute: () => HomeGoalRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
@@ -116,8 +134,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthSignupRouteImport
       parentRoute: typeof AuthImport
     }
+    '/_home/goal': {
+      preLoaderRoute: typeof HomeGoalImport
+      parentRoute: typeof HomeImport
+    }
+    '/_home/goal/$id': {
+      preLoaderRoute: typeof HomeGoalIdImport
+      parentRoute: typeof HomeGoalImport
+    }
     '/_home/analytics/': {
       preLoaderRoute: typeof HomeAnalyticsIndexImport
+      parentRoute: typeof HomeImport
+    }
+    '/_home/calender/': {
+      preLoaderRoute: typeof HomeCalenderIndexImport
       parentRoute: typeof HomeImport
     }
     '/_home/diary/': {
@@ -130,7 +160,7 @@ declare module '@tanstack/react-router' {
     }
     '/_home/goal/': {
       preLoaderRoute: typeof HomeGoalIndexImport
-      parentRoute: typeof HomeImport
+      parentRoute: typeof HomeGoalImport
     }
     '/_home/habit/': {
       preLoaderRoute: typeof HomeHabitIndexImport
@@ -157,10 +187,11 @@ export const routeTree = rootRoute.addChildren([
   IndexRoute,
   AuthRoute.addChildren([AuthLoginRouteRoute, AuthSignupRouteRoute]),
   HomeRoute.addChildren([
+    HomeGoalRoute.addChildren([HomeGoalIdRoute, HomeGoalIndexRoute]),
     HomeAnalyticsIndexRoute,
+    HomeCalenderIndexRoute,
     HomeDiaryIndexRoute,
     HomeFocusIndexRoute,
-    HomeGoalIndexRoute,
     HomeHabitIndexRoute,
     HomeMorningPaperIndexRoute,
     HomeProfileIndexRoute,
