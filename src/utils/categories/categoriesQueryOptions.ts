@@ -3,7 +3,6 @@ import categoryService from './categories.api';
 import { queryClient } from '@/main';
 
 export const categoriesQueryOptions = queryOptions({
-  initialData: [],
   queryKey: ['categories'],
   queryFn: () => categoryService.getAll(),
 });
@@ -19,6 +18,9 @@ export const useCreateCategoryMutation = () => {
     mutationKey: ['categories', 'create'],
     mutationFn: categoryService.create,
     onSuccess: () => queryClient.invalidateQueries(),
+    meta: {
+      message: 'Create Category',
+    },
   });
 };
 
@@ -27,6 +29,9 @@ export const useUpdateCategoryMutation = (id: string) => {
     mutationKey: ['categories', 'update', id],
     mutationFn: categoryService.update,
     onSuccess: () => queryClient.invalidateQueries(),
+    meta: {
+      message: 'Update Category',
+    },
   });
 };
 
@@ -35,5 +40,8 @@ export const useDeleteCategoryMutation = (id: string) => {
     mutationKey: ['categories', 'delete', id],
     mutationFn: () => categoryService.delete(id),
     onSuccess: () => queryClient.invalidateQueries(),
+    meta: {
+      message: 'Delete Category',
+    },
   });
 };

@@ -10,7 +10,6 @@ import { AnimatePresence } from 'framer-motion';
 import { motion } from 'framer-motion';
 import { TfiPlus } from 'react-icons/tfi';
 import axiosInstance from '@/config/axiosInstance';
-import { AxiosResponse } from 'axios';
 import { RiArrowDropRightLine } from 'react-icons/ri';
 
 export const Route = createFileRoute('/_home/goal/$id')({
@@ -22,25 +21,21 @@ export const Route = createFileRoute('/_home/goal/$id')({
 });
 
 function Goal() {
-  const { data: tasks } = useQuery({
-    queryKey: ['tasks'],
-    queryFn: async (): Promise<AxiosResponse<any>> => axiosInstance.get('tasks'),
-  });
-  const [startAddTask, setStartAddTask] = useState(false);
   const { id } = Route.useParams();
+  const [startAddTask, setStartAddTask] = useState(false);
   const { data: goal } = useSuspenseQuery(goalQueryOptions(id));
   const { data: categories } = useQuery(categoriesQueryOptions);
   // const { data: categories } = useSuspenseQuery(categoriesQueryOptions);
   const [data, setData] = useState<Partial<IGoal>>({
-    id: goal.id,
-    title: goal.title ?? '',
-    description: goal.description ?? '',
-    categories: goal.categories ?? [],
-    priority: goal.priority ?? 0,
+    id: goal.data.id,
+    title: goal.data.title ?? '',
+    description: goal.data.description ?? '',
+    categories: goal.data.categories ?? [],
+    priority: goal.data.priority ?? 0,
   });
   const [selected, setSelected] = useState({ label: 'Mid', value: 3 });
   const blocker = useMemo(() => {
-    return goal.title === data.title && goal.description === data.description;
+    return goal.data.title === data.title && goal.data.description === data.description;
   }, [data, goal]);
 
   const queryClient = useQueryClient();
@@ -48,10 +43,10 @@ function Goal() {
   const { mutate } = useUpdateGoalMutation();
   useEffect(() => {
     setData({
-      id: goal.id,
-      title: goal.title ?? '',
-      description: goal.description ?? '',
-      categories: goal.categories ?? [],
+      id: goal.data.id,
+      title: goal.data.title ?? '',
+      description: goal.data.description ?? '',
+      categories: goal.data.categories ?? [],
     });
   }, [id]);
 
@@ -60,19 +55,24 @@ function Goal() {
   useBlocker(() => window.confirm('the changes will be discard are you sure?'), !blocker);
 
   return (
-    <div className="p-4">
-      <button
-        aria-label="update"
-        className="btn btn-square btn-neutral btn-sm w-full"
-        disabled={goal.title === data.title && goal.description === data.description}
-        onClick={() => {
-          mutate({ title: data.title, description: data.description, id: goal.id });
-          queryClient.invalidateQueries({ queryKey: ['goals'] });
-          // setSubmit(true);
-        }}
-      >
-        Edit <GiPencil />
-      </button>
+    <div className="flex h-screen flex-col p-4">
+      <div className="grid grid-cols-2 gap-2">
+        <button
+          aria-label="update"
+          className="btn btn-square btn-neutral btn-sm w-full"
+          disabled={goal.data.title === data.title && goal.data.description === data.description}
+          onClick={() => {
+            mutate({ title: data.title, description: data.description, id: goal.data.id });
+            queryClient.invalidateQueries({ queryKey: ['goals'] });
+            // setSubmit(true);
+          }}
+        >
+          Edit <GiPencil />
+        </button>
+        <Link to="/goal/tasks/$taskId" params={{ taskId: goal.data.id }}>
+          <button className="btn btn-square btn-info btn-sm w-full text-white">Task</button>
+        </Link>
+      </div>
       <input
         className="input input-ghost mt-4 w-full font-medium text-primary-content"
         type="text"
@@ -99,10 +99,10 @@ function Goal() {
             return { ...prev, categories: e as Category[] };
           });
           if (e.length > 0) {
-            mutate({ id: goal.id, categories: e.map((e: any) => e.id) });
+            mutate({ id: goal.data.id, categories: e.map((e: any) => e.id) });
           }
         }}
-        options={categories}
+        options={categories?.data}
         getOptionLabel={(opt) => opt.title}
         getOptionValue={(opt) => opt.id}
         value={data.categories}
@@ -112,7 +112,7 @@ function Goal() {
         onChange={(e) => {
           setSelected(e as any);
           setData({ ...data, priority: e?.value });
-          mutate({ id: goal.id, priority: e?.value });
+          mutate({ id: goal.data.id, priority: e?.value });
         }}
         options={[
           { label: 'None', value: 1 },
@@ -124,8 +124,8 @@ function Goal() {
         value={selected}
       ></Select>
       <hr className="my-4 w-full" />
-      <div className="mt-4 space-y-3">
-        {tasks?.data.map((task: any) => {
+      <div className="mt-4 flex-grow space-y-3 overflow-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-slate-300 ">
+        {goal.data.tasks.map((task) => {
           return (
             <motion.div
               initial={{ opacity: 0, y: '100%' }}
@@ -133,11 +133,24 @@ function Goal() {
               className="flex w-full items-center gap-2"
               key={task.id}
             >
-              <input type="checkbox" className="checkbox-accent checkbox checkbox-xs" />
+              <input
+                checked={task.status === 'DONE'}
+                type="checkbox"
+                className={`${task.status === 'DONE' ? 'checkbox-accent' : ''}  checkbox checkbox-xs`}
+                onChange={async () => {
+                  await axiosInstance.patch('tasks/' + task.id, { status: task.status === 'DONE' ? 'TODO' : 'DONE' });
+                  queryClient.invalidateQueries({ queryKey: ['tasks'] });
+                  queryClient.invalidateQueries({ queryKey: ['goals'] });
+                }}
+              />
               <input
                 value={task.title}
-                onChange={(e) => console.log(e)}
-                className="w-full flex-grow border-none text-sm text-zinc-800 outline-none focus-visible:outline-none"
+                onChange={async (e) => {
+                  await axiosInstance.patch('tasks/' + task.id, { title: e.target.value });
+                  queryClient.invalidateQueries({ queryKey: ['tasks'] });
+                  queryClient.invalidateQueries({ queryKey: ['goals'] });
+                }}
+                className={`w-full flex-grow border-none text-sm text-zinc-800 outline-none focus-visible:outline-none ${task.status === 'DONE' && 'text-zinc-400 line-through'}`}
               />
               <Link to="/task">
                 <RiArrowDropRightLine className="" />
@@ -149,17 +162,26 @@ function Goal() {
       <AnimatePresence>
         {startAddTask && (
           <motion.div
-            className="flex items-center gap-2"
+            className="mt-3 flex items-center  gap-2 rounded-md border px-2 py-3 shadow"
             initial={{ opacity: 0, y: '100%' }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
           >
             <input
               type="text"
-              className="w-full border-none text-sm text-gray-500 outline-none focus-within:outline-none"
+              className=" w-full border-none text-sm text-gray-500 outline-none focus-within:outline-none"
               placeholder="No title"
               autoFocus
               value={task}
+              onKeyDown={async (e) => {
+                if (e.key === 'Enter') {
+                  await axiosInstance.post('tasks', { goalId: id, title: task });
+                  queryClient.invalidateQueries({ queryKey: ['tasks'] });
+                  queryClient.invalidateQueries({ queryKey: ['goals'] });
+                  setTask('');
+                  setStartAddTask(false);
+                }
+              }}
               onChange={(e) => setTask(e.target.value)}
             />
             <TfiPlus
@@ -167,6 +189,7 @@ function Goal() {
               onClick={async () => {
                 await axiosInstance.post('tasks', { goalId: id, title: task });
                 queryClient.invalidateQueries({ queryKey: ['tasks'] });
+                queryClient.invalidateQueries({ queryKey: ['goals'] });
                 setTask('');
                 setStartAddTask(false);
               }}

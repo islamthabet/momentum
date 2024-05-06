@@ -7,6 +7,7 @@ import { useSuspenseQueries } from '@tanstack/react-query';
 import { goalsQueryOptions } from './goal/-components/api/goalQueryOptions';
 import { useWindowSize } from 'react-use';
 import { AnimatePresence, motion } from 'framer-motion';
+import Loader from '@/components/Loader';
 
 export const Route = createFileRoute('/_home/goal')({
   component: Goals,
@@ -16,18 +17,20 @@ export const Route = createFileRoute('/_home/goal')({
       opts.context.queryClient.ensureQueryData(goalsQueryOptions),
     ]);
   },
+  pendingComponent: () => <Loader />,
 });
 
 function Goals() {
   const { width } = useWindowSize();
   const [categories, goals] = useSuspenseQueries({ queries: [categoriesQueryOptions, goalsQueryOptions] });
+  console.log((goals.data as any)?.data);
 
   return (
     <div className="grid h-full flex-grow grid-cols-12 gap-2 ">
       <div className="col-span-12 flex h-screen flex-col py-4 md:col-span-8">
         <PageTitle title="Goals" />
-        <AddGoalForm categories={categories.data as any[]} />
-        <GoalsList goals={goals.data as any[]} />
+        <AddGoalForm categories={(categories.data as any).data} />
+        <GoalsList goals={(goals.data as any).data} />
       </div>
       <AnimatePresence>
         {width > 950 && (
@@ -35,7 +38,7 @@ function Goals() {
             initial={{ x: '100%', opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: '100%', opacity: 0 }}
-            className="col-span-4 border-l border-gray-400 border-opacity-40 "
+            className="z-50 col-span-4 border-l border-gray-400 border-opacity-40 "
           >
             <Outlet />
           </motion.div>

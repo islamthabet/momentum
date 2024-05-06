@@ -1,17 +1,16 @@
 import { FcGoogle } from 'react-icons/fc';
 import { FaGithubAlt } from 'react-icons/fa';
+import { Button } from 'antd';
 
 export const SocialButtons = () => {
   return (
-    <div className="space-y-2">
-      <button className="btn btn-ghost relative w-full rounded-2xl text-gray-600">
-        <FcGoogle className="absolute left-4 top-1/2 -translate-y-1/2 text-xl" />
-        Google
-      </button>
-      <button className="btn btn-ghost  relative w-full rounded-2xl text-gray-600">
-        <FaGithubAlt className="absolute left-4 top-1/2 -translate-y-1/2 text-xl" /> Githup
-      </button>
-      {/* <button className='btn btn-ghost w-full'>Google</button> */}
+    <div className="space-y-2 text-center">
+      <Button type="text" size="large" icon={<FcGoogle />}>
+        <span className="font-bold text-gray-600">Google</span>
+      </Button>
+      <Button type="text" size="large" icon={<FaGithubAlt />} className="text-bold text-gray-600">
+        <span className="font-bold text-gray-600">Github</span>
+      </Button>
     </div>
   );
 };

@@ -1,49 +1,31 @@
-import {createSlice} from '@reduxjs/toolkit';
-import {RootState} from '../store';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { RootState } from '../store';
+import { User } from '@/routes/_home/goal/-components/interface/Goal.interface';
 
 export interface AuthState {
   isLogin: boolean;
-  user: any;
-  loading: boolean;
-  error: string | null;
+  user: User | null;
 }
 
 export const initialState: AuthState = {
-  isLogin: true,
+  isLogin: false,
   user: null,
-  loading: false,
-  error: null,
 };
 
 export const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    login: (state, action) => {
+    login: (state, action: PayloadAction<AuthState>) => {
       state.isLogin = true;
-      state.user = action.payload;
-      state.loading = false;
-      state.error = null;
+      state.user = action.payload.user;
     },
-    logout: (state) => {
-      state.isLogin = false;
-
-      state.user = null;
-      state.loading = false;
-      state.error = null;
-    },
-    error: (state, action) => {
-      state.isLogin = false;
-      state.user = null;
-      state.loading = false;
-      state.error = action.payload;
-    },
+    logout: () => initialState,
   },
 });
 
-export const {login, logout, error} = authSlice.actions;
+export const { login, logout } = authSlice.actions;
 
-// selector
 export const selectAuth = (state: RootState) => state.auth;
 
 export default authSlice.reducer;

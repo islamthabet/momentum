@@ -11,33 +11,48 @@ export interface Goal {
   taskCount: number;
 }
 
+export interface Permission {
+  id: number;
+  name: string;
+  action: string;
+  subject: string;
+  conditions: any;
+}
+
+export interface Role {
+  id: number;
+  name: string;
+  permissions: Permission[];
+}
+
 export interface User {
   id: string;
-  createdAt: string;
-  updatedAt: string;
-  isActive: boolean;
-  firstname: string;
-  lastname: string;
-  gender: any;
-  birthday: any;
+  createdAt?: Date;
+  updatedAt?: Date;
+  isActive?: boolean;
+  firstname?: string;
+  lastname?: string;
+  gender?: any;
+  birthday?: any;
   username: string;
   email: string;
-  password: string;
-  role: string;
+  profileImage: string;
+
+  role: Role;
 }
 
 export interface Category {
   id: string;
-  createdAt: string;
-  updatedAt: string;
+  createdAt: Date;
+  updatedAt: Date;
   isActive: boolean;
   title: string;
 }
 
 export interface Task {
   id: number;
-  createdAt: string;
-  updatedAt: string;
+  createdAt: Date;
+  updatedAt: Date;
   isActive: boolean;
   title: string;
   description: any;
@@ -47,4 +62,6 @@ export interface Task {
   userId: number;
   goalId: number;
   version: number;
+  user: User;
+  goal: Goal;
 }

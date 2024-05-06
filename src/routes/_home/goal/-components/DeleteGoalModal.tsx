@@ -29,7 +29,7 @@ const DeleteGoalModal: FC<Props> = ({ goal, setOpen }) => {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.5 }}
-      className="fixed left-0 top-0 z-50 flex h-screen w-screen items-center justify-center overflow-hidden bg-black bg-opacity-50"
+      className="fixed left-0 top-0 z-[100] flex h-screen w-screen items-center justify-center overflow-hidden bg-black bg-opacity-50"
     >
       <motion.div
         initial={{ opacity: 0, y: -100 }}

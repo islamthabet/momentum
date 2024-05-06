@@ -3,9 +3,7 @@ import goalService from './goal.api';
 import { queryClient } from '@/main';
 import { GoalForm } from '../interface/GoalForm.interface';
 import { Goal } from '../interface/Goal.interface';
-
 export const goalsQueryOptions = queryOptions({
-  initialData: [],
   queryKey: ['goals'],
   queryFn: () => goalService.getAll(),
 });
@@ -21,6 +19,9 @@ export const useCreateGoalMutation = () => {
     mutationKey: ['goals', 'create'],
     mutationFn: (data: GoalForm) => goalService.create(data),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['gaols'] }),
+    meta: {
+      message: 'Create Goal',
+    },
   });
 };
 
@@ -31,6 +32,9 @@ export const useUpdateGoalMutation = () => {
     onSuccess: () => {
       queryClient.invalidateQueries();
     },
+    meta: {
+      message: 'Update Goal',
+    },
   });
 };
 
@@ -39,5 +43,8 @@ export const useDeleteGoalMutation = (id: string) => {
     mutationKey: ['goal', 'delete', id],
     mutationFn: () => goalService.delete(id),
     onSuccess: () => queryClient.invalidateQueries(),
+    meta: {
+      message: 'Delete Goal',
+    },
   });
 };

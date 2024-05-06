@@ -14,10 +14,15 @@ import { Route as rootRoute } from './routes/__root'
 import { Route as HomeImport } from './routes/_home'
 import { Route as AuthImport } from './routes/_auth'
 import { Route as IndexImport } from './routes/index'
+import { Route as HomeUserImport } from './routes/_home/user'
+import { Route as HomeRolesImport } from './routes/_home/roles'
 import { Route as HomeGoalImport } from './routes/_home/goal'
 import { Route as AuthSignupRouteImport } from './routes/_auth/signup/route'
 import { Route as AuthLoginRouteImport } from './routes/_auth/login/route'
+import { Route as AuthForgotPasswordRouteImport } from './routes/_auth/forgotPassword/route'
+import { Route as HomeUsersIndexImport } from './routes/_home/users/index'
 import { Route as HomeTaskIndexImport } from './routes/_home/task/index'
+import { Route as HomeRolesIndexImport } from './routes/_home/roles/index'
 import { Route as HomeProfileIndexImport } from './routes/_home/profile/index'
 import { Route as HomeMorningPaperIndexImport } from './routes/_home/morningPaper/index'
 import { Route as HomeHabitIndexImport } from './routes/_home/habit/index'
@@ -26,7 +31,15 @@ import { Route as HomeFocusIndexImport } from './routes/_home/focus/index'
 import { Route as HomeDiaryIndexImport } from './routes/_home/diary/index'
 import { Route as HomeCalenderIndexImport } from './routes/_home/calender/index'
 import { Route as HomeAnalyticsIndexImport } from './routes/_home/analytics/index'
+import { Route as HomeUsersAddImport } from './routes/_home/users/add'
+import { Route as HomeRolesAddImport } from './routes/_home/roles/add'
 import { Route as HomeGoalIdImport } from './routes/_home/goal/$id'
+import { Route as HomeUsersEditIdImport } from './routes/_home/users/edit.$id'
+import { Route as HomeUsersDeleteIdImport } from './routes/_home/users/delete.$id'
+import { Route as HomeRolesEditIdImport } from './routes/_home/roles/edit.$id'
+import { Route as HomeRolesDeleteIdImport } from './routes/_home/roles/delete.$id'
+import { Route as HomeRolesIdPermissionsImport } from './routes/_home/roles/$id.permissions'
+import { Route as HomeGoalTasksTaskIdImport } from './routes/_home/goal/tasks.$taskId'
 
 // Create/Update Routes
 
@@ -45,6 +58,16 @@ const IndexRoute = IndexImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const HomeUserRoute = HomeUserImport.update({
+  path: '/user',
+  getParentRoute: () => HomeRoute,
+} as any)
+
+const HomeRolesRoute = HomeRolesImport.update({
+  path: '/roles',
+  getParentRoute: () => HomeRoute,
+} as any)
+
 const HomeGoalRoute = HomeGoalImport.update({
   path: '/goal',
   getParentRoute: () => HomeRoute,
@@ -60,9 +83,24 @@ const AuthLoginRouteRoute = AuthLoginRouteImport.update({
   getParentRoute: () => AuthRoute,
 } as any)
 
+const AuthForgotPasswordRouteRoute = AuthForgotPasswordRouteImport.update({
+  path: '/forgotPassword',
+  getParentRoute: () => AuthRoute,
+} as any)
+
+const HomeUsersIndexRoute = HomeUsersIndexImport.update({
+  path: '/users/',
+  getParentRoute: () => HomeRoute,
+} as any)
+
 const HomeTaskIndexRoute = HomeTaskIndexImport.update({
   path: '/task/',
   getParentRoute: () => HomeRoute,
+} as any)
+
+const HomeRolesIndexRoute = HomeRolesIndexImport.update({
+  path: '/',
+  getParentRoute: () => HomeRolesRoute,
 } as any)
 
 const HomeProfileIndexRoute = HomeProfileIndexImport.update({
@@ -105,8 +143,48 @@ const HomeAnalyticsIndexRoute = HomeAnalyticsIndexImport.update({
   getParentRoute: () => HomeRoute,
 } as any)
 
+const HomeUsersAddRoute = HomeUsersAddImport.update({
+  path: '/users/add',
+  getParentRoute: () => HomeRoute,
+} as any)
+
+const HomeRolesAddRoute = HomeRolesAddImport.update({
+  path: '/add',
+  getParentRoute: () => HomeRolesRoute,
+} as any)
+
 const HomeGoalIdRoute = HomeGoalIdImport.update({
   path: '/$id',
+  getParentRoute: () => HomeGoalRoute,
+} as any)
+
+const HomeUsersEditIdRoute = HomeUsersEditIdImport.update({
+  path: '/users/edit/$id',
+  getParentRoute: () => HomeRoute,
+} as any)
+
+const HomeUsersDeleteIdRoute = HomeUsersDeleteIdImport.update({
+  path: '/users/delete/$id',
+  getParentRoute: () => HomeRoute,
+} as any)
+
+const HomeRolesEditIdRoute = HomeRolesEditIdImport.update({
+  path: '/edit/$id',
+  getParentRoute: () => HomeRolesRoute,
+} as any)
+
+const HomeRolesDeleteIdRoute = HomeRolesDeleteIdImport.update({
+  path: '/delete/$id',
+  getParentRoute: () => HomeRolesRoute,
+} as any)
+
+const HomeRolesIdPermissionsRoute = HomeRolesIdPermissionsImport.update({
+  path: '/$id/permissions',
+  getParentRoute: () => HomeRolesRoute,
+} as any)
+
+const HomeGoalTasksTaskIdRoute = HomeGoalTasksTaskIdImport.update({
+  path: '/tasks/$taskId',
   getParentRoute: () => HomeGoalRoute,
 } as any)
 
@@ -126,6 +204,10 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HomeImport
       parentRoute: typeof rootRoute
     }
+    '/_auth/forgotPassword': {
+      preLoaderRoute: typeof AuthForgotPasswordRouteImport
+      parentRoute: typeof AuthImport
+    }
     '/_auth/login': {
       preLoaderRoute: typeof AuthLoginRouteImport
       parentRoute: typeof AuthImport
@@ -138,9 +220,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HomeGoalImport
       parentRoute: typeof HomeImport
     }
+    '/_home/roles': {
+      preLoaderRoute: typeof HomeRolesImport
+      parentRoute: typeof HomeImport
+    }
+    '/_home/user': {
+      preLoaderRoute: typeof HomeUserImport
+      parentRoute: typeof HomeImport
+    }
     '/_home/goal/$id': {
       preLoaderRoute: typeof HomeGoalIdImport
       parentRoute: typeof HomeGoalImport
+    }
+    '/_home/roles/add': {
+      preLoaderRoute: typeof HomeRolesAddImport
+      parentRoute: typeof HomeRolesImport
+    }
+    '/_home/users/add': {
+      preLoaderRoute: typeof HomeUsersAddImport
+      parentRoute: typeof HomeImport
     }
     '/_home/analytics/': {
       preLoaderRoute: typeof HomeAnalyticsIndexImport
@@ -174,8 +272,40 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HomeProfileIndexImport
       parentRoute: typeof HomeImport
     }
+    '/_home/roles/': {
+      preLoaderRoute: typeof HomeRolesIndexImport
+      parentRoute: typeof HomeRolesImport
+    }
     '/_home/task/': {
       preLoaderRoute: typeof HomeTaskIndexImport
+      parentRoute: typeof HomeImport
+    }
+    '/_home/users/': {
+      preLoaderRoute: typeof HomeUsersIndexImport
+      parentRoute: typeof HomeImport
+    }
+    '/_home/goal/tasks/$taskId': {
+      preLoaderRoute: typeof HomeGoalTasksTaskIdImport
+      parentRoute: typeof HomeGoalImport
+    }
+    '/_home/roles/$id/permissions': {
+      preLoaderRoute: typeof HomeRolesIdPermissionsImport
+      parentRoute: typeof HomeRolesImport
+    }
+    '/_home/roles/delete/$id': {
+      preLoaderRoute: typeof HomeRolesDeleteIdImport
+      parentRoute: typeof HomeRolesImport
+    }
+    '/_home/roles/edit/$id': {
+      preLoaderRoute: typeof HomeRolesEditIdImport
+      parentRoute: typeof HomeRolesImport
+    }
+    '/_home/users/delete/$id': {
+      preLoaderRoute: typeof HomeUsersDeleteIdImport
+      parentRoute: typeof HomeImport
+    }
+    '/_home/users/edit/$id': {
+      preLoaderRoute: typeof HomeUsersEditIdImport
       parentRoute: typeof HomeImport
     }
   }
@@ -185,9 +315,26 @@ declare module '@tanstack/react-router' {
 
 export const routeTree = rootRoute.addChildren([
   IndexRoute,
-  AuthRoute.addChildren([AuthLoginRouteRoute, AuthSignupRouteRoute]),
+  AuthRoute.addChildren([
+    AuthForgotPasswordRouteRoute,
+    AuthLoginRouteRoute,
+    AuthSignupRouteRoute,
+  ]),
   HomeRoute.addChildren([
-    HomeGoalRoute.addChildren([HomeGoalIdRoute, HomeGoalIndexRoute]),
+    HomeGoalRoute.addChildren([
+      HomeGoalIdRoute,
+      HomeGoalIndexRoute,
+      HomeGoalTasksTaskIdRoute,
+    ]),
+    HomeRolesRoute.addChildren([
+      HomeRolesAddRoute,
+      HomeRolesIndexRoute,
+      HomeRolesIdPermissionsRoute,
+      HomeRolesDeleteIdRoute,
+      HomeRolesEditIdRoute,
+    ]),
+    HomeUserRoute,
+    HomeUsersAddRoute,
     HomeAnalyticsIndexRoute,
     HomeCalenderIndexRoute,
     HomeDiaryIndexRoute,
@@ -196,6 +343,9 @@ export const routeTree = rootRoute.addChildren([
     HomeMorningPaperIndexRoute,
     HomeProfileIndexRoute,
     HomeTaskIndexRoute,
+    HomeUsersIndexRoute,
+    HomeUsersDeleteIdRoute,
+    HomeUsersEditIdRoute,
   ]),
 ])
 
